@@ -108,7 +108,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Response refreshToken(String refreshToken) {
         Token token = tokenRepository.findByRefreshToken(refreshToken).orElseThrow(
-                () -> new AppException(ErrorCode.ERR_REFRESH_TOKEN_NOT_EXIST)
+                () -> new AppException(ErrorCode.ERR_TOKEN)
         );
         Account account = token.getAccount() ;
         tokenRepository.delete(token) ;
