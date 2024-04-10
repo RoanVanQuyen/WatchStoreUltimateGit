@@ -11,6 +11,7 @@ import java.util.List;
 
 public interface AccountService extends UserDetailsService {
     Response signIn(String userName, String password) ;
+    Response refreshToken(String refreshToken) ;
     Response addAccount(AccountRequest request) ;
     Response updAccount(int accountId , AccountRequest request) ;
     Response forgetPassword(String customerEmail) throws MessagingException, UnsupportedEncodingException;

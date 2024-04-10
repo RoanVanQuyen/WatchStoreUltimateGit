@@ -1,6 +1,7 @@
 package com.example.watchstoreultimate.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -8,11 +9,13 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.validation.annotation.Validated;
 
+import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Entity
-@Data
+@Data@Hidden
 @NoArgsConstructor @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -25,7 +28,7 @@ public class Product {
     int productPrice ;
     @Builder.Default
             @Column(columnDefinition = "DATE")
-    LocalDate productSaleDate = LocalDate.now();
+    Date productSaleDate = new Date(System.currentTimeMillis());
     @Min(value = 1 , message = "Số lượng sản phẩm lớn hơn 0")
     int productQuantity;
     @Min(value = 0 , message = "Phần trăm giảm giá của sản phẩm phải lớn hơn hoặc bằng 0")
@@ -48,4 +51,8 @@ public class Product {
     @OneToMany(mappedBy = "product" , cascade = CascadeType.ALL)
             @JsonIgnore
     List<PurchaseHistory> purchaseHistories ;
+
+    @OneToMany(mappedBy = "product" , cascade = CascadeType.ALL)
+            @JsonIgnore
+    List<Comment> comments ;
 }

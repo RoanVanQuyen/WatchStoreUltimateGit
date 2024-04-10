@@ -14,6 +14,7 @@ import com.example.watchstoreultimate.repository.CustomerRepository;
 import com.example.watchstoreultimate.repository.ProductRepository;
 import com.example.watchstoreultimate.repository.PurchaseHistoryRepository;
 import com.example.watchstoreultimate.service.CartService;
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -236,6 +237,8 @@ public class CartServiceImpl implements CartService {
                         .product(cart.getProduct())
                         .customer(cart.getCustomer())
                         .quantity(cart.getCartQuantity())
+                        .paymentMethod("VN pay")
+                        .priceSold(cart.getProduct().getProductPrice() * ((100-cart.getProduct().getProductPriceReduction()) * 100))
                         .build() ;
                 purchaseHistoryRepository.save(purchaseHistory) ;
                 productRepository.save(product);

@@ -11,5 +11,4 @@ public interface ProductImageService {
     Response updProductImage(int productImageId , int productId , MultipartFile file) throws  IOException;
     Response findProductImageById(int productImageId) ;
     Response findProductImageByProductId(int productId) ;
-    Response findProductImageByName(String name) ;
 }

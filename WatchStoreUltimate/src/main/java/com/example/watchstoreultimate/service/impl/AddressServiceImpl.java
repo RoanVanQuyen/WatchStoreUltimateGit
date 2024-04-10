@@ -10,6 +10,7 @@ import com.example.watchstoreultimate.mapper.AddressMapper;
 import com.example.watchstoreultimate.repository.AddressRepository;
 import com.example.watchstoreultimate.repository.CustomerRepository;
 import com.example.watchstoreultimate.service.AddressService;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;

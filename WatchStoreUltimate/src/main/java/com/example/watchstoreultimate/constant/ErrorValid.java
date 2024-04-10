@@ -11,4 +11,7 @@ public class ErrorValid {
     public final static String ERR_CUSTOMER_NAME_VALID = "Tên người dùng cần ít nhất 2 kí tự" ;
     public final static String ERR_CUSTOMER_PHONE_VALID = "Số điện thoại chỉ gồm 10 số"  ;
     public final static String ERR_CUSTOMER_EMAIL_VALID = "Định dạng email chưa đúng" ;
+    public final static String ERR_BLOG_NAME_VALID = "Tên bài viết cần ít nhất 10 kí tự" ;
+    public final static String ERR_BLOG_CONTENT_VALID = "Nội dung bài viết cần ít nhất 100 kí tự" ;
+
 }

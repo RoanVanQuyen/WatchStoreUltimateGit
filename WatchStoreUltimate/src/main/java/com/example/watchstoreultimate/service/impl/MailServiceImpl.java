@@ -20,7 +20,7 @@ import java.util.Random;
 
 
 @Service
-public class MailServiceImpl implements MailService {
+public class  MailServiceImpl implements MailService {
     private Map<String , Integer> saveCode = new HashMap<>() ;
     @Autowired
     JavaMailSender javaMailSender ;

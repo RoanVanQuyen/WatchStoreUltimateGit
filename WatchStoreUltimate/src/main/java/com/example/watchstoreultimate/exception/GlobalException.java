@@ -1,13 +1,19 @@
 package com.example.watchstoreultimate.exception;
 
 import com.example.watchstoreultimate.dto.response.Response;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.security.SecurityException;
+import jakarta.servlet.ServletException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.io.IOException;
+
 @RestControllerAdvice
-public class GloblaException {
+public class GlobalException {
+
     @ExceptionHandler(value = AppException.class)
     public ResponseEntity<?> appException(AppException appException){
         Response response = Response.builder()
@@ -18,12 +24,27 @@ public class GloblaException {
                 .body(response) ;
     }
 
-
-    @ExceptionHandler(value = RuntimeException.class)
-    public ResponseEntity<?> runtimeException(RuntimeException runtimeException){
+    @ExceptionHandler(value = JwtException.class)
+    public ResponseEntity<?> jwtException(JwtException jwtException){
         return ResponseEntity.badRequest()
-                .body(runtimeException.getMessage()) ;
+                .body(jwtException.getMessage()) ;
     }
+
+
+
+    @ExceptionHandler(value = Exception.class)
+    public ResponseEntity<?> runtimeException(Exception exception){
+        return ResponseEntity.badRequest()
+                .body(exception.getMessage()) ;
+    }
+
+
+    @ExceptionHandler(value = IOException.class)
+    public ResponseEntity<?> IOException(IOException exception){
+        return ResponseEntity.badRequest()
+                .body(exception.getMessage()) ;
+    }
+
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseEntity<?> validException(MethodArgumentNotValidException validException){
@@ -53,4 +74,13 @@ public class GloblaException {
                 .body(response) ;
     }
     //Excaption email
+    @ExceptionHandler(value = AuthenticateException.class)
+    public ResponseEntity<?> authenticateException(AuthenticateException exception){
+        Response response = Response.builder()
+                .code(exception.getErrorCode().getCode())
+                .message(exception.getErrorCode().getMessage())
+                .build() ;
+        return ResponseEntity.status(exception.getErrorCode().getCode())
+                .body(response) ;
+    }
 }

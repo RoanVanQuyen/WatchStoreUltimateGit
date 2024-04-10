@@ -1,6 +1,7 @@
 package com.example.watchstoreultimate.service.impl;
 
 import com.example.watchstoreultimate.dto.request.BrandRequest;
+import com.example.watchstoreultimate.dto.response.PageCustom;
 import com.example.watchstoreultimate.dto.response.Response;
 import com.example.watchstoreultimate.entity.Brand;
 import com.example.watchstoreultimate.exception.AppException;
@@ -8,10 +9,13 @@ import com.example.watchstoreultimate.exception.ErrorCode;
 import com.example.watchstoreultimate.mapper.BrandMapper;
 import com.example.watchstoreultimate.repository.BrandRepository;
 import com.example.watchstoreultimate.service.BrandService;
+import com.example.watchstoreultimate.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +26,9 @@ public class BrandServiceImpl implements BrandService {
     private BrandRepository brandRepository ;
     @Autowired
     private BrandMapper brandMapper ;
+    @Autowired
+    RedisService redisService ;
+    final static String KEY = "brand" ;
 
     @Override
     public Response addBrand(BrandRequest request) {
@@ -30,6 +37,7 @@ public class BrandServiceImpl implements BrandService {
             throw new AppException(ErrorCode.NAME_EXISTED) ;
         }
         brandRepository.save(brand) ;
+        redisService.hashDel(KEY);
         return Response.builder()
                 .code(200)
                 .result(brand)
@@ -45,23 +53,36 @@ public class BrandServiceImpl implements BrandService {
         if(brandRepository.existsAllByBrandName(request.getBrandName())){
             throw new AppException(ErrorCode.NAME_EXISTED);
         }
+        brandRepository.save(request) ;
+        redisService.hashDel(KEY);
         return Response.builder()
                 .code(200)
-                .result(brandRepository.save(request))
+                .result(request)
                 .message("Success")
                 .build();
     }
 
     @Override
     public Response findAll(Pageable pageable) {
-        List<Brand> brands = new ArrayList<>() ;
-        brands = brandRepository.findBrandsByBrandAvailable(pageable , BRAND_AVAILABLE).getContent() ;
-        Response response = new Response() ;
-        return response.builder()
-                .code(200)
-                .result(brands)
-                .message("Success")
-                .build();
+        String field = pageable.toString() ;
+        Response response = (Response) redisService.hashGet(KEY , field);
+        if(response == null ) {
+            Page<Brand> page = brandRepository.findBrandsByBrandAvailable(pageable, BRAND_AVAILABLE);
+            PageCustom<Brand> pageCustom = PageCustom.<Brand>builder()
+                    .pageIndex(pageable.getPageNumber())
+                    .pageElement(pageable.getPageSize())
+                    .pageSize(page.getTotalPages())
+                    .content(page.getContent())
+                    .sort(pageable.getSort().toString())
+                    .build();
+            response =  Response.builder()
+                    .code(200)
+                    .result(pageCustom)
+                    .message("Success")
+                    .build();
+            redisService.hashSet(KEY, field , response);
+        }
+        return response ;
     }
 
     @Override
@@ -76,6 +97,7 @@ public class BrandServiceImpl implements BrandService {
                 brands.add(brand) ;
             }
         }
+        redisService.hashDel(KEY);
         return Response.builder()
                 .code(200)
                 .result(brands)
@@ -95,6 +117,7 @@ public class BrandServiceImpl implements BrandService {
                 brands.add(brand) ;
             }
         }
+        redisService.hashDel(KEY);
         return Response.builder()
                 .code(200)
                 .result(brands)
@@ -104,14 +127,20 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     public Response findBrand(int request_id) {
-        Brand brandOptional = brandRepository.findBrandByBrandIdAndBrandAvailable(request_id, BRAND_AVAILABLE).orElseThrow(
-                ()-> new AppException(ErrorCode.ERR_ID_NOT_FOUND)
-        ) ;
-        return Response.builder()
-                .code(200)
-                .result(brandOptional)
-                .message("Success")
-                .build();
+        String field = "brandId: " + request_id ;
+        Response response = (Response) redisService.hashGet(KEY , field);
+        if(response == null) {
+            Brand brandOptional = brandRepository.findBrandByBrandIdAndBrandAvailable(request_id, BRAND_AVAILABLE).orElseThrow(
+                    () -> new AppException(ErrorCode.ERR_ID_NOT_FOUND)
+            );
+            response = Response.builder()
+                    .code(200)
+                    .result(brandOptional)
+                    .message("Success")
+                    .build();
+            redisService.hashSet(KEY,  field , response);
+        }
+        return response ;
     }
 
 }

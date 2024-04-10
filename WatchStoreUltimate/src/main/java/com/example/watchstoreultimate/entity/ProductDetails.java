@@ -1,11 +1,12 @@
 package com.example.watchstoreultimate.entity;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Entity
-@Data @Builder
+@Data @Builder@Hidden
 @AllArgsConstructor @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductDetails {

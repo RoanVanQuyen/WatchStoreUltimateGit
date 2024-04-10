@@ -1,18 +1,24 @@
 package com.example.watchstoreultimate.service.impl;
 
 import com.example.watchstoreultimate.dto.request.CustomerRequest;
+import com.example.watchstoreultimate.dto.response.PageCustom;
 import com.example.watchstoreultimate.dto.response.Response;
+import com.example.watchstoreultimate.entity.Account;
+import com.example.watchstoreultimate.entity.Comment;
 import com.example.watchstoreultimate.entity.Customer;
 import com.example.watchstoreultimate.exception.AppException;
 import com.example.watchstoreultimate.exception.ErrorCode;
 import com.example.watchstoreultimate.mapper.CustomerMapper;
+import com.example.watchstoreultimate.repository.AccountRepository;
 import com.example.watchstoreultimate.repository.CustomerRepository;
 import com.example.watchstoreultimate.service.CustomerService;
 import com.example.watchstoreultimate.service.MailService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.mail.MessagingException;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -27,17 +33,25 @@ public class CustomerServiceImpl implements CustomerService {
     @Autowired
     CustomerRepository customerRepository ;
     @Autowired
+    AccountRepository accountRepository ;
+    @Autowired
     CustomerMapper customerMapper ;
     @Autowired
     MailService mailService ;
 
     @Override
     public Response getCustomer(Pageable pageable) {
-        List<Customer> customers = new ArrayList<>() ;
-        customers = customerRepository.findAllByCustomerAvailable(CUSTOMER_AVAILABLE,pageable).getContent() ;
+        Page<Customer> page = customerRepository.findAllByCustomerAvailable(CUSTOMER_AVAILABLE,pageable) ;
+        PageCustom<Customer> pageCustom = PageCustom.<Customer>builder()
+                .pageIndex(page.getNumber() + 1)
+                .pageElement(page.getSize())
+                .pageSize(page.getTotalPages())
+                .content(page.getContent())
+                .sort(page.getSort().toString())
+                .build();
         return Response.builder()
                 .code(200)
-                .result(customers)
+                .result(pageCustom)
                 .message("Get customer success")
                 .build();
     }
@@ -132,6 +146,9 @@ public class CustomerServiceImpl implements CustomerService {
             Optional<Customer> customerOptional = customerRepository.findById(x) ;
             if(customerOptional.isPresent()){
                 customerOptional.get().setCustomerAvailable(CUSTOMER_AVAILABLE_FALSE);
+                Account account = customerOptional.get().getAccount() ;
+                account.setAccountAvailable(CUSTOMER_AVAILABLE_FALSE);
+                accountRepository.save(account) ;
                 customerRepository.save(customerOptional.get()) ;
                 customers.add(customerOptional.get()) ;
             }

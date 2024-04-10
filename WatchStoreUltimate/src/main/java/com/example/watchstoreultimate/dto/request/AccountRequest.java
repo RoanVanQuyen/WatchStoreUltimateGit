@@ -20,9 +20,5 @@ public class AccountRequest {
     String userName ;
     @Size(min = 8 , message = "Mật khẩu cần chứa ít nhất 8 kí tự ")
     String password ;
-    @Builder.Default
-    int roleId = 1011 ;
-    @Builder.Default
-    boolean accountAvailable = true ;
     int customerId ;
 }

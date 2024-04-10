@@ -1,6 +1,7 @@
 package com.example.watchstoreultimate.config;
 
 import com.example.watchstoreultimate.constant.RoleConstant;
+import com.example.watchstoreultimate.constant.UrlConstant;
 import com.example.watchstoreultimate.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -43,7 +44,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder(){
-        return  new BCryptPasswordEncoder() ;
+        return new BCryptPasswordEncoder() ;
     }
 
     @Bean
@@ -51,9 +52,60 @@ public class SecurityConfig {
         return httpSecurity
                 .csrf( csrf -> csrf.disable())
                 .authorizeHttpRequests(req -> {
-                    req.requestMatchers("account" , "account/**", "customer/**" , "/**").permitAll() ;
-                    req.requestMatchers("category/**").hasAnyAuthority(RoleConstant.MANAGER, RoleConstant.ADMIN) ;
-                    req.anyRequest().authenticated() ;
+                    req.requestMatchers(
+                            "/account" + UrlConstant.AccountURL.SIGN_IN
+                            ,"/account" + UrlConstant.AccountURL.REGISTER
+                            , UrlConstant.AccountURL.FORGET_PASSWORD
+                            , "swagger-ui/index.html" +"/**"
+                            , "/v3/api-docs/**"
+                            , "/swagger-ui/**"
+//                            , "/**"
+                            , UrlConstant.AccountURL.PRE_FIX + UrlConstant.FIND + "/**"
+                            , UrlConstant.AddressURL.PRE_FIX + UrlConstant.FIND + "/**"
+                            , UrlConstant.BrandURL.PRE_FIX + UrlConstant.FIND + "/**"
+                            , UrlConstant.CartURL.PRE_FIX + UrlConstant.FIND + "/**"
+                            , UrlConstant.CategoryURL.PRE_FIX + UrlConstant.FIND + "/**"
+                            , UrlConstant.CommentURL.PRE_FIX + UrlConstant.FIND + "/**"
+                            , UrlConstant.CustomerURL.PRE_FIX + UrlConstant.FIND + "/**"
+                            , UrlConstant.ProductURL.PRE_FIX + UrlConstant.FIND + "/**"
+                            , UrlConstant.ProductDetailsURL.PRE_FIX + UrlConstant.FIND + "/**"
+                            , UrlConstant.ProductImageURL.PRE_FIX + UrlConstant.FIND + "/**"
+                            , UrlConstant.BlogUrl.PRE_FIX + UrlConstant.FIND + "/**"
+                    ).permitAll() ;
+
+
+                    req.requestMatchers(
+                            UrlConstant.AccountURL.PRE_FIX + UrlConstant.ROLE_USER + "/**"
+                            , UrlConstant.AddressURL.PRE_FIX + UrlConstant.ROLE_USER + "/**"
+                            , UrlConstant.BrandURL.PRE_FIX + UrlConstant.ROLE_USER + "/**"
+                            , UrlConstant.CartURL.PRE_FIX + UrlConstant.ROLE_USER + "/**"
+                            , UrlConstant.CategoryURL.PRE_FIX + UrlConstant.ROLE_USER + "/**"
+                            , UrlConstant.CommentURL.PRE_FIX + UrlConstant.ROLE_USER + "/**"
+                            , UrlConstant.CustomerURL.PRE_FIX + UrlConstant.ROLE_USER + "/**"
+                            , UrlConstant.ProductURL.PRE_FIX + UrlConstant.ROLE_USER + "/**"
+                            , UrlConstant.ProductDetailsURL.PRE_FIX + UrlConstant.ROLE_USER + "/**"
+                            , UrlConstant.ProductImageURL.PRE_FIX + UrlConstant.ROLE_USER + "/**"
+//                            , UrlConstant.PurchaseUrl.PRE_FIX + UrlConstant.ROLE_MANAGER + "/**"
+                    ).hasAnyAuthority(RoleConstant.USER , RoleConstant.MANAGER, RoleConstant.ADMIN ) ;
+
+
+                    req.requestMatchers(
+                            UrlConstant.AccountURL.PRE_FIX + UrlConstant.ROLE_MANAGER + "/**"
+                            , UrlConstant.AddressURL.PRE_FIX + UrlConstant.ROLE_MANAGER + "/**"
+                            , UrlConstant.BrandURL.PRE_FIX + UrlConstant.ROLE_MANAGER + "/**"
+                            , UrlConstant.CartURL.PRE_FIX + UrlConstant.ROLE_MANAGER + "/**"
+                            , UrlConstant.CategoryURL.PRE_FIX + UrlConstant.ROLE_MANAGER + "/**"
+                            , UrlConstant.CommentURL.PRE_FIX + UrlConstant.ROLE_MANAGER + "/**"
+                            , UrlConstant.CustomerURL.PRE_FIX + UrlConstant.ROLE_MANAGER + "/**"
+                            , UrlConstant.ProductURL.PRE_FIX + UrlConstant.ROLE_MANAGER + "/**"
+                            , UrlConstant.ProductDetailsURL.PRE_FIX + UrlConstant.ROLE_MANAGER + "/**"
+                            , UrlConstant.ProductImageURL.PRE_FIX + UrlConstant.ROLE_MANAGER + "/**"
+                            , UrlConstant.BlogUrl.PRE_FIX + UrlConstant.ROLE_MANAGER + "/**"
+                    ).hasAnyAuthority(RoleConstant.MANAGER, RoleConstant.ADMIN) ;
+                    req.requestMatchers(
+                            UrlConstant.CustomerURL.PRE_FIX + UrlConstant.ROLE_ADMIN + "/**"// can bo sung
+                    ).hasAnyAuthority(RoleConstant.ADMIN) ;
+                    req.anyRequest().permitAll() ;
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())

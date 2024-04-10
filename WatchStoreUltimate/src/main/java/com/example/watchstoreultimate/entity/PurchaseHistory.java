@@ -1,11 +1,12 @@
 package com.example.watchstoreultimate.entity;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
-
+@Hidden
 @Entity
 @Data
 @Builder@NoArgsConstructor@AllArgsConstructor
@@ -19,5 +20,8 @@ public class PurchaseHistory {
             Customer customer ;
     int quantity ;
     @Builder.Default
-    LocalDate purchaseHistoryIdDay = LocalDate.now() ;
+    LocalDate purchaseHistoryDay = LocalDate.now() ;
+    @Column(columnDefinition = "varchar(50)")
+    String paymentMethod  ;
+    int priceSold ;
 }

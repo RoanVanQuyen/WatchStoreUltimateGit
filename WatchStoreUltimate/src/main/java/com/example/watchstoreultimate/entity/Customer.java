@@ -2,6 +2,7 @@ package com.example.watchstoreultimate.entity;
 
 import com.example.watchstoreultimate.constant.ErrorValid;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -12,7 +13,7 @@ import java.util.List;
 
 @Entity
 @Builder @Data
-@AllArgsConstructor @NoArgsConstructor
+@AllArgsConstructor @NoArgsConstructor@Hidden
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Customer {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,17 +33,25 @@ public class Customer {
     boolean customerAvailable =true;
 
     // mapp
-    @OneToOne(mappedBy = "customer" ,cascade =  CascadeType.ALL)
+    @OneToOne(mappedBy = "customer", fetch = FetchType.LAZY ,cascade =  CascadeType.ALL)
             @JsonIgnore
     Account account ;
-    @OneToOne(mappedBy = "customer" , cascade =  CascadeType.ALL)
+    @OneToOne(mappedBy = "customer" , fetch = FetchType.LAZY, cascade =  CascadeType.ALL)
             @JsonIgnore
     Address address;
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
             @JsonIgnore
     List<Cart> carts ;
 
-    @OneToMany(mappedBy = "customer" , cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "customer" , fetch = FetchType.LAZY, cascade = CascadeType.ALL)
             @JsonIgnore
     List<PurchaseHistory> purchaseHistories ;
+
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+            @JsonIgnore
+    List<Comment> comments ;
+
+    @OneToMany(mappedBy = "customer" , fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+            @JsonIgnore
+    List<Blog> blogs ;
 }

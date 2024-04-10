@@ -1,10 +1,12 @@
 package com.example.watchstoreultimate.controller;
 
+import com.cloudinary.Cloudinary;
+import com.example.watchstoreultimate.config.CloudinaryConfig;
 import com.example.watchstoreultimate.constant.UrlConstant;
 import com.example.watchstoreultimate.dto.response.Response;
 import com.example.watchstoreultimate.entity.ProductImage;
 import com.example.watchstoreultimate.service.ProductImageService;
-import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,22 +16,25 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(UrlConstant.ProductImageURL.PRE_FIX)
+@Tag( name = "PRODUCT IMAGE API" ,  description = "REST API PRODUCT IMAGE FOR FRONT-END DEVELOPER")
 public class ProductImageController {
     @Autowired
     private ProductImageService  productImageService ;
-
-
-    @RequestMapping(value = UrlConstant.ProductImageURL.ADD_PRODUCT_IMAGE ,method = RequestMethod.POST)
+    @Autowired
+    Cloudinary cloudinary ;
+    @RequestMapping(value = UrlConstant.ProductImageURL.M_ADD_PRODUCT_IMAGE,method = RequestMethod.POST)
     public ResponseEntity<?> addProductImage(@PathVariable int productId , @RequestParam MultipartFile file) throws IOException {
         Response response = productImageService.addProductImage(productId , file) ;
         return ResponseEntity.status(response.getCode())
                 .body(response) ;
     }
 
-    @RequestMapping(value = UrlConstant.ProductImageURL.UPD_PRODUCT_IMAGE, method = RequestMethod.PUT)
+
+    @RequestMapping(value = UrlConstant.ProductImageURL.M_UPD_PRODUCT_IMAGE, method = RequestMethod.PUT)
     public ResponseEntity<?> updProductImage(@PathVariable int productImageId ,
                                              @PathVariable int productId ,
                                              @RequestParam MultipartFile file) throws IOException {
@@ -41,32 +46,18 @@ public class ProductImageController {
     @RequestMapping(value= UrlConstant.ProductImageURL.FIND_BY_ID, method = RequestMethod.GET)
     public ResponseEntity<?> findById(@PathVariable int request){
         Response response = productImageService.findProductImageById(request) ;
-        ProductImage productImage = (ProductImage) response.getResult();
         return ResponseEntity.status(response.getCode())
-                .contentType(MediaType.valueOf(productImage.getImageType()))
-                .body(productImage.getImageData());
+                .body(response);
     }
 
-    @RequestMapping(value= UrlConstant.ProductImageURL.FIND_BY_NAME, method = RequestMethod.GET)
-    public ResponseEntity<?> findByName(@PathVariable String request){
-        Response response = productImageService.findProductImageByName(request) ;
-        ProductImage productImage = (ProductImage) response.getResult();
-        return ResponseEntity.status(response.getCode())
-                .contentType(MediaType.valueOf(productImage.getImageType()))
-                .body(productImage.getImageData());
-    }
+
 
     @RequestMapping(value= UrlConstant.ProductImageURL.FIND_BY_PRODUCT, method = RequestMethod.GET)
     public ResponseEntity<?> findByProductId(@PathVariable int request){
         Response response = productImageService.findProductImageByProductId(request) ;
-        List<ProductImage> productImages = (List<ProductImage>) response.getResult();
-        List<String> urls = new ArrayList<>() ;
-        for(ProductImage x : productImages){
-            urls.add("localhost:8080/product/image/id/"+ x.getProductImageId())  ;
-        }
         response = Response.builder()
                 .code(200)
-                .result(urls)
+                .result(response)
                 .message("Find image by product success")
                 .build() ;
         return ResponseEntity.status(response.getCode())

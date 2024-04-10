@@ -16,5 +16,5 @@ public interface CategoryService {
     Response addCategory(CategoryRequest request) ;
     Response delCategory(List<Integer> request) ;
     Response reDelCategory(List<Integer> request_ids) ;
-    Response updCategory(Category category) ;
+    Response updCategory(int categoryId , CategoryRequest category) ;
 }

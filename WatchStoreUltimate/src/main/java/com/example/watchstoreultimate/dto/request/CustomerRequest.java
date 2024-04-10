@@ -19,8 +19,4 @@ public class CustomerRequest {
     String customerEmail ;
     @Size(min = 10 , max = 11 , message = ErrorValid.ERR_CUSTOMER_PHONE_VALID)
     String customerPhone ;
-    @Builder.Default
-    LocalDate accountCreatDate = LocalDate.now() ;
-    @Builder.Default
-    boolean customerAvailable =true;
 }

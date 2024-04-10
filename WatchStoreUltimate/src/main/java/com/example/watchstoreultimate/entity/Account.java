@@ -1,5 +1,7 @@
 package com.example.watchstoreultimate.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -11,7 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-@Entity
+@Entity @Hidden
 @Data @Builder
 @AllArgsConstructor @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -26,6 +28,7 @@ public class Account implements UserDetails {
     String password ;
     @ManyToOne @JoinColumn(name = "roleId")
     Role role ;
+    @Builder.Default
     boolean accountAvailable = true ;
     @OneToOne @JoinColumn(name = "customerId")
     Customer customer ;

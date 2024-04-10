@@ -10,6 +10,7 @@ import com.example.watchstoreultimate.mapper.ProductDetailsMapper;
 import com.example.watchstoreultimate.repository.ProductDetailsRepository;
 import com.example.watchstoreultimate.repository.ProductRepository;
 import com.example.watchstoreultimate.service.ProductDetailsService;
+import com.example.watchstoreultimate.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,9 @@ public class ProductDetailsServiceImpl implements ProductDetailsService {
     ProductRepository productRepository ;
     @Autowired
     ProductDetailsRepository productDetailsRepository;
+    @Autowired
+    RedisService redisService ;
+    final static String KEY = "product-details" ;
     @Override
     public Response addProductDetails(int productId , ProductDetailsRequest request) {
         Product product = productRepository.findById(productId).orElseThrow(
@@ -28,9 +32,11 @@ public class ProductDetailsServiceImpl implements ProductDetailsService {
         ) ;
         ProductDetails productDetails = productDetailsMapper.toProductDetails(request) ;
         productDetails.setProduct(product);
+        productDetailsRepository.save(productDetails) ;
+        redisService.hashDel(KEY);
         return Response.builder()
                 .code(200)
-                .result(productDetailsRepository.save(productDetails))
+                .result(productDetails)
                 .message("Add product details success")
                 .build();
     }
@@ -40,34 +46,48 @@ public class ProductDetailsServiceImpl implements ProductDetailsService {
         productDetailsRepository.findById(productDetails.getProductDetailsId()).orElseThrow(
                 () -> new AppException(ErrorCode.ERR_ID_NOT_FOUND)
         );
+        productDetailsRepository.save(productDetails) ;
+        redisService.hashDel(KEY);
         return Response.builder()
                 .code(200)
-                .result(productDetailsRepository.save(productDetails))
+                .result(productDetails)
                 .message("Update product details success")
                 .build();
     }
 
     @Override
     public Response findProductDetails(int productDetailsId) {
-        ProductDetails productDetails = productDetailsRepository.findById(productDetailsId).orElseThrow(
-                () -> new AppException(ErrorCode.ERR_ID_NOT_FOUND)
-        );
-        return Response.builder()
-                .code(200)
-                .result(productDetails)
-                .message("Find product details success")
-                .build();
+        String field = "productDetailsId: "   + productDetailsId;
+        Response response = (Response) redisService.hashGet(KEY , field);
+        if(response == null) {
+            ProductDetails productDetails = productDetailsRepository.findById(productDetailsId).orElseThrow(
+                    () -> new AppException(ErrorCode.ERR_ID_NOT_FOUND)
+            );
+            response = Response.builder()
+                    .code(200)
+                    .result(productDetails)
+                    .message("Find product details success")
+                    .build();
+            redisService.hashSet(KEY , field , response);
+        }
+        return response ;
     }
 
     @Override
     public Response findProductDetailsByProductId(int productId) {
-        ProductDetails productDetails = productDetailsRepository.findByProductId(productId).orElseThrow(
-                () -> new AppException(ErrorCode.ERR_ID_NOT_FOUND)
-        );
-        return Response.builder()
-                .code(200)
-                .result(productDetails)
-                .message("Find product details success")
-                .build();
+        String field = "productId: " + productId ;
+        Response response = (Response) redisService.hashGet(KEY , field);
+        if(response == null) {
+            ProductDetails productDetails = productDetailsRepository.findByProductId(productId).orElseThrow(
+                    () -> new AppException(ErrorCode.ERR_ID_NOT_FOUND)
+            );
+            response=  Response.builder()
+                    .code(200)
+                    .result(productDetails)
+                    .message("Find product details success")
+                    .build();
+            redisService.hashSet(KEY , field , response);
+        }
+        return response ;
     }
 }

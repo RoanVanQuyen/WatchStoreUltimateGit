@@ -2,6 +2,7 @@ package com.example.watchstoreultimate.entity;
 
 import com.example.watchstoreultimate.constant.ErrorValid;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -10,7 +11,7 @@ import lombok.experimental.FieldDefaults;
 import java.util.List;
 
 @Entity
-@Data @Builder
+@Data @Builder@Hidden
 @NoArgsConstructor @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Brand {

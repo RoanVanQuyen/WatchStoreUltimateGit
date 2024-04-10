@@ -1,6 +1,7 @@
 package com.example.watchstoreultimate.entity;
 
 import com.example.watchstoreultimate.idclass.CustomerProduct;
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
-@Entity @IdClass(CustomerProduct.class)
+@Entity @IdClass(CustomerProduct.class)@Hidden
 @Data @Builder
 @AllArgsConstructor @NoArgsConstructor
 public class Cart {
