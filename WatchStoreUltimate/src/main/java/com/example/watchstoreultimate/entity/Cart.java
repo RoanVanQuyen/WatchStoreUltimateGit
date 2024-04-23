@@ -21,6 +21,8 @@ public class Cart {
     Product product ;
     @Min(value = 1, message = "Số lượng sản phẩm trong giỏ hàng phải lớn hơn 0")
     int cartQuantity;
+    @Version
+    int version ;
     @Builder.Default
             @Column(columnDefinition = "DATE")
     LocalDate cart_add_date = LocalDate.now();

@@ -24,7 +24,7 @@ public class Brand {
     @Column(columnDefinition = "text" , nullable = false , unique = true)
     String brandDetails ;
     @Builder.Default
-            @Column(columnDefinition = "default '1'")
+            @Column()
     boolean brandAvailable = true;
 
     // Mapper

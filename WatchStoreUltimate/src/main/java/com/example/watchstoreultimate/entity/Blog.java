@@ -1,11 +1,11 @@
 package com.example.watchstoreultimate.entity;
 
-import com.example.watchstoreultimate.constant.ErrorResponseMessage;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
+import java.util.Date;
+
 
 @Builder@Data
 @AllArgsConstructor@NoArgsConstructor
@@ -22,8 +22,10 @@ public class Blog { // ROLE_MANAGER , ADMIN
     int view = 0 ;
     @Builder.Default
     boolean available = true ;
+
     @Builder.Default
-    LocalDate blogCreatDate = LocalDate.now() ;
+            @Column(columnDefinition = "date")
+    Date blogCreatDate = new Date(System.currentTimeMillis()) ;
     @ManyToOne @JoinColumn(name = "customerId")
     Customer customer ;
 }

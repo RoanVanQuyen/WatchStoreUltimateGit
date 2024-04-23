@@ -14,6 +14,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Data @AllArgsConstructor @NoArgsConstructor
 @Builder
@@ -23,7 +24,7 @@ public class ProductRequest {
     @Min(value = 1 , message = "Giá sản phẩm không được nhỏ hơn 1")
     int productPrice ;
     @Builder.Default
-    LocalDate productSaleDate = LocalDate.now();
+    Date productSaleDate = new Date(System.currentTimeMillis()) ;
     @Min(value = 1 , message = "Số lượng sản phẩm lớn hơn 0")
     int productQuantity;
     @Min(value = 0 , message = "Phần trăm giảm giá của sản phẩm phải lớn hơn hoặc bằng 0")

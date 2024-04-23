@@ -18,6 +18,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Service
@@ -36,6 +37,7 @@ public class JwtServiceImpl implements JwtService {
                 .setSubject(account.getUsername())
                 .setIssuer(account.getCustomer().getCustomerName())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setId(UUID.randomUUID().toString())
                 .setExpiration(new Date(System.currentTimeMillis() + EFFECTIVE))
                 .signWith( SignatureAlgorithm.HS256, getSigningKey())
                 .compact() ;

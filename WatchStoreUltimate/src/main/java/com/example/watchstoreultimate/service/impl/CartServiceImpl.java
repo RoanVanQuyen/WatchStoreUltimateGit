@@ -8,6 +8,7 @@ import com.example.watchstoreultimate.entity.Product;
 import com.example.watchstoreultimate.entity.PurchaseHistory;
 import com.example.watchstoreultimate.exception.AppException;
 import com.example.watchstoreultimate.exception.ErrorCode;
+import com.example.watchstoreultimate.idclass.CustomerProduct;
 import com.example.watchstoreultimate.onlinePay.VnpayConfig;
 import com.example.watchstoreultimate.repository.CartRepository;
 import com.example.watchstoreultimate.repository.CustomerRepository;
@@ -15,8 +16,12 @@ import com.example.watchstoreultimate.repository.ProductRepository;
 import com.example.watchstoreultimate.repository.PurchaseHistoryRepository;
 import com.example.watchstoreultimate.service.CartService;
 import io.swagger.v3.oas.annotations.Hidden;
+import jakarta.persistence.LockModeType;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
@@ -144,7 +149,9 @@ public class CartServiceImpl implements CartService {
 
 
 
-    private  Map<Integer , List<Cart>> saveInfoCart = new HashMap<>() ;
+    @Setter
+    private Map<Integer , List<Cart>> saveInfoCart = new HashMap<>() ;
+
     @Override
     public Response payCart(List<Cart> requests, HttpServletRequest req) throws UnsupportedEncodingException {
         long sumPrice = 0 ;
@@ -159,7 +166,8 @@ public class CartServiceImpl implements CartService {
 
         long amount = sumPrice  * 100;
         String vnp_TxnRef = VnpayConfig.getRandomNumber() + "";
-        saveInfoCart.put(Integer.parseInt(vnp_TxnRef) , requests) ;
+        saveInfoCart.put(Integer.valueOf(vnp_TxnRef), requests);
+
 
         String vnp_IpAddr = VnpayConfig.getIpAddress(req);
         String vnp_TmnCode = VnpayConfig.vnp_TmnCode;
@@ -220,36 +228,74 @@ public class CartServiceImpl implements CartService {
                 .message("Result: URL")
                 .build() ;
     }
+
+    @Transactional
+    @Override
+    public void fakeData() {
+//        Cart cart = Cart.builder()
+//                .customer(customerRepository.findByCustomerIdAndCustomerAvailable(11 , true).orElse(null))
+//                .product(productRepository.findByProductIdAndProductAvailable(2 , true).orElse(null))
+//                .cartQuantity(5)
+//                .version(1)
+//                .build() ;
+//        Cart cart2 = Cart.builder()
+//                .customer(customerRepository.findByCustomerIdAndCustomerAvailable(10 , true).orElse(null))
+//                .product(productRepository.findByProductIdAndProductAvailable(2 , true).orElse(null))
+//                .cartQuantity(7)
+//                .version(1)
+//                .build() ;
+//        List<Cart> cartsOne = cartRepository.getCartByCustomerId(11);
+//        List<Cart> cartsTwo = cartRepository.getCartByCustomerId(10) ;
+//        saveInfoCart.put(1,cartsOne) ;
+//        saveInfoCart.put(2,cartsTwo) ;
+//
+//        cartRepository.save(cart) ;
+//        cartRepository.save(cart2) ;
+    }
+
+    @Transactional
     @Override
     public Response extractPay(int vnpay_responseCode , int  vnp_TxnRef) {
-        Product product = Product.builder().build();
         if(vnpay_responseCode == 00){
             List<Cart> carts = saveInfoCart.get(vnp_TxnRef) ;
-            for(Cart cart :carts){
-                product = productRepository.findByProductIdAndProductAvailable(cart.getProduct().getProductId(), true).orElseThrow(
-                        () -> new AppException(ErrorCode.ERR_ID_NOT_FOUND)
-                ) ;
-                product.setProductQuantity(product.getProductQuantity()- cart.getCartQuantity());
-                if(product.getProductQuantity() < 1){
-                    product.setProductAvailable(false);
+            if(carts !=null) {
+                for (Cart cart : carts) {
+                    // LOCK CAI DAU TIEN LA DU ROI , lock cai dau tien , thi chuong trinh se dung lai de cho doi khi co key
+                    if(!cartRepository.existsByCustomerAndProduct(cart.getCustomer() , cart.getProduct())){ // Check xem lieu don hang thanh toan co ton tai khong
+                        throw new AppException(ErrorCode.CART_NOT_EXISTED) ;
+                    }
+                    Product product = productRepository.findByProductIdAndProductAvailable(cart.getProduct().getProductId(), true).orElseThrow(
+                            () -> new AppException(ErrorCode.ERR_ID_NOT_FOUND)
+                    );
+                    product.setProductQuantity(product.getProductQuantity() - cart.getCartQuantity());
+                    if (product.getProductQuantity() < 1) {
+                        product.setProductAvailable(false);
+                    }
+                    product = productRepository.save(product);
+                    product = productRepository.findByProductIdAndProductAvailable(product.getProductId(), true).orElseThrow(
+                            () -> new AppException(ErrorCode.ERR_ID_NOT_FOUND)
+                    );
+                    PurchaseHistory purchaseHistory = PurchaseHistory.builder()
+                            .product(cart.getProduct())
+                            .customer(cart.getCustomer())
+                            .quantity(cart.getCartQuantity())
+                            .paymentMethod("VN pay")
+                            .priceSold(cart.getProduct().getProductPrice() * ((100 - cart.getProduct().getProductPriceReduction()) * 100))
+                            .build();
+                    purchaseHistoryRepository.save(purchaseHistory);
+                    //Check neu don hang da duoc thanh toan boi 1 user khac
+                    cartRepository.delete(cart);
                 }
-                PurchaseHistory purchaseHistory = PurchaseHistory.builder()
-                        .product(cart.getProduct())
-                        .customer(cart.getCustomer())
-                        .quantity(cart.getCartQuantity())
-                        .paymentMethod("VN pay")
-                        .priceSold(cart.getProduct().getProductPrice() * ((100-cart.getProduct().getProductPriceReduction()) * 100))
-                        .build() ;
-                purchaseHistoryRepository.save(purchaseHistory) ;
-                productRepository.save(product);
-                cartRepository.delete(cart);
+            }else{
+                throw new AppException(ErrorCode.PAYMENT_FAILED) ;
             }
+            saveInfoCart.remove(vnp_TxnRef) ;
             return Response.builder()
                     .code(200)
                     .result(carts)
                     .message("Pay success")
                     .build() ;
         }
-        throw  new AppException(ErrorCode.PAYMENT_FAILED) ;
+        throw new AppException(ErrorCode.PAYMENT_FAILED) ;
     }
 }

@@ -78,10 +78,20 @@ public class AccountController {
                 .body(response) ;
     }
 
+
+
     @Operation(summary = "Refresh token")
     @RequestMapping(value = UrlConstant.AccountURL.REFRESH_TOKEN, method = RequestMethod.POST)
     public ResponseEntity<?> refreshToken(@PathVariable String refreshToken){
         Response response = accountService.refreshToken(refreshToken) ;
+        return ResponseEntity.status(response.getCode())
+                .body(response) ;
+    }
+
+    @Operation(summary = "Logout ")
+    @RequestMapping(value = UrlConstant.AccountURL.LOGOUT , method = RequestMethod.POST)
+    public ResponseEntity<?> logout(@PathVariable String tokenContent){
+        Response response = accountService.logout(tokenContent) ;
         return ResponseEntity.status(response.getCode())
                 .body(response) ;
     }

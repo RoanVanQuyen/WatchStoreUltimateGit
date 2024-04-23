@@ -5,20 +5,27 @@ import com.example.watchstoreultimate.constant.ErrorResponseMessage;
 import com.example.watchstoreultimate.constant.UrlConstant;
 import com.example.watchstoreultimate.dto.request.ProductRequest;
 import com.example.watchstoreultimate.dto.response.Response;
+import com.example.watchstoreultimate.entity.Product;
+import com.example.watchstoreultimate.repository.ProductRepository;
 import com.example.watchstoreultimate.service.ProductService;
+import com.example.watchstoreultimate.service.RedisService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.OptimisticLockException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 @RestController
 @RequestMapping(UrlConstant.ProductURL.PRE_FIX)
@@ -129,4 +136,31 @@ public class ProductController {
         return ResponseEntity.status(response.getCode())
                 .body(response);
     }
+
+//    @RequestMapping(value = "test/{id}") // TEST DA LUONG XU LI
+//    public ResponseEntity<?> testUpdate(@RequestBody ProductRequest request, @PathVariable int id) throws InterruptedException {
+//        Runnable runOne = () -> IntStream.range(0, 3).forEach(i -> {
+//            try {
+//                Response response = productService.updProduct(id, request);
+//                System.out.println("Thread one: " + response.getCode());
+//            }catch (Exception e){
+//                System.out.println("400");
+//            }
+//        });
+//        Runnable runTwo = () -> IntStream.range(0, 3).forEach(i -> {
+//            try {
+//                Response response = productService.updProduct(id, request);
+//                System.out.println("Thread two: " + response.getCode());
+//            }catch (Exception e){
+//                System.out.println("400");
+//            }
+//
+////            System.out.println(i);
+//        });
+//        var one = new Thread(runOne) ;
+//        var two = new Thread(runTwo) ;
+//        one.start();
+//        two.start();
+//        return ResponseEntity.ok().body("TEST SUCCESS") ;
+//    }
 }

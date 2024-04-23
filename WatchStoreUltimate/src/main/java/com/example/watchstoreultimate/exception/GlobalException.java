@@ -4,7 +4,9 @@ import com.example.watchstoreultimate.dto.response.Response;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.security.SecurityException;
 import jakarta.servlet.ServletException;
+import jakarta.transaction.TransactionalException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -13,7 +15,7 @@ import java.io.IOException;
 
 @RestControllerAdvice
 public class GlobalException {
-
+// Sử dugnj 'web request' để lấy dữ liệu từ http
     @ExceptionHandler(value = AppException.class)
     public ResponseEntity<?> appException(AppException appException){
         Response response = Response.builder()
@@ -24,6 +26,12 @@ public class GlobalException {
                 .body(response) ;
     }
 
+    @ExceptionHandler(value = TransactionalException.class)
+    public ResponseEntity<?> tran(TransactionalException exception){
+        return ResponseEntity.badRequest()
+                .body(exception.toString()) ;
+    }
+
     @ExceptionHandler(value = JwtException.class)
     public ResponseEntity<?> jwtException(JwtException jwtException){
         return ResponseEntity.badRequest()
@@ -31,9 +39,8 @@ public class GlobalException {
     }
 
 
-
-    @ExceptionHandler(value = Exception.class)
-    public ResponseEntity<?> runtimeException(Exception exception){
+    @ExceptionHandler(value = RuntimeException.class)
+    public ResponseEntity<?> runtimeException(RuntimeException exception){
         return ResponseEntity.badRequest()
                 .body(exception.getMessage()) ;
     }

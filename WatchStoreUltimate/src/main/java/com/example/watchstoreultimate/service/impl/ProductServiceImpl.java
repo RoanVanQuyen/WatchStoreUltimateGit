@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -59,17 +60,18 @@ public class ProductServiceImpl implements ProductService {
                 .build();
     }
 
+    @Transactional
     @Override
     public Response updProduct(int productId , ProductRequest request) {
-        Product productDb = productRepository.findById(productId).orElseThrow(
+        Product productDb = productRepository.findByProductIdAndProductAvailable(productId, true).orElseThrow(
                 () -> new AppException(ErrorCode.ERR_ID_NOT_FOUND)
         ) ;
         if(productRepository.existsByProductName(request.getProductName()) && !productDb.getProductName().equals(request.getProductName())){
             throw new AppException(ErrorCode.NAME_EXISTED) ;
         }
         productMapper.updProduct(productDb,request);
-        productRepository.save(productDb) ;
-        deleteCache();
+        productDb = productRepository.save(productDb) ;
+        deleteCache(); // Cap nhap thanh cong
         return Response.builder()
                 .code(200)
                 .result(productDb)
@@ -96,14 +98,16 @@ public class ProductServiceImpl implements ProductService {
                 .build();
     }
 
+    @Transactional
     @Override
     public Response reDelProduct(List<Integer> request) {
         List<Product> products = new ArrayList<>() ;
         for(Integer x : request){
             Optional<Product> productOptional = productRepository.findById(x) ;
             if(productOptional.isPresent()){
-                productOptional.get().setProductAvailable(PRODUCT_AVAILABLE);
-                productRepository.save(productOptional.get()) ;
+//                productOptional.get().setProductAvailable(PRODUCT_AVAILABLE);
+//                productRepository.save(productOptional.get()) ;
+                productRepository.reDeleteProduct(x) ;
                 products.add(productOptional.get()) ;
             }
         }
@@ -131,6 +135,7 @@ public class ProductServiceImpl implements ProductService {
         return response;
     }
 
+    @Transactional
     @Override
     public Response getNewProduct() {
         String field = "getNewProduct" ;
@@ -211,7 +216,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Response findProductById(int request) {
-        String field = request + "" ;
+        String field = "id: " + request ;
         Response response = (Response) redisService.hashGet(KEY , field);
         if(response == null) {
             Optional<Product> productOptional = productRepository.findByProductIdAndProductAvailable(request, PRODUCT_AVAILABLE);

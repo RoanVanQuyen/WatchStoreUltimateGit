@@ -2,17 +2,25 @@ package com.example.watchstoreultimate;
 
 import com.example.watchstoreultimate.dto.response.Response;
 import com.example.watchstoreultimate.entity.Brand;
+import com.example.watchstoreultimate.entity.Cart;
 import com.example.watchstoreultimate.entity.Product;
 import com.example.watchstoreultimate.entity.PurchaseHistory;
+import com.example.watchstoreultimate.repository.CartRepository;
+import com.example.watchstoreultimate.repository.ProductRepository;
 import com.example.watchstoreultimate.repository.PurchaseHistoryRepository;
 import com.example.watchstoreultimate.service.BrandService;
+import com.example.watchstoreultimate.service.CartService;
 import com.example.watchstoreultimate.service.ProductService;
 import com.example.watchstoreultimate.service.RedisService;
+import com.example.watchstoreultimate.service.impl.CartServiceImpl;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.servers.Server;
 import jakarta.mail.MessagingException;
+import jakarta.persistence.OptimisticLockException;
+import org.apache.poi.sl.usermodel.ObjectMetaData;
+import org.hibernate.dialect.lock.OptimisticEntityLockException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -21,6 +29,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.IntStream;
 
 @SpringBootApplication
 @OpenAPIDefinition(
@@ -40,29 +51,31 @@ import java.util.*;
 )
 public class WatchStoreUltimateApplication implements CommandLineRunner {
     @Autowired
-    private RedisService redisService ;
+    private RedisService redisService;
+
     public static void main(String[] args) throws MessagingException {
         SpringApplication.run(WatchStoreUltimateApplication.class, args);
     }
 
+
+
     @Autowired
-    PurchaseHistoryRepository repository ;
+    CartService cartService ;
     @Override
     public void run(String... args) throws Exception {
-//        List<String> string = new ArrayList<>() ;
-//        int n = 10000 ;
-//        while(n-- > 0) {
-//            string.add(UUID.randomUUID().toString());
-//        }
-//        Collections.sort(string, new Comparator<String>() {
-//            @Override
-//            public int compare(String o1, String o2) {
-//                return o1.compareTo(o2);
-//            }
-//        });
-//        for(int i = 0 ;i < string.size()-1 ; i++){
-//            if(string.get(i).equals(string.get(i+1))){
-//                System.out.println(string.get(i));
+        cartService.fakeData();
+    }
+
+
+    public void test(Product product){
+//        while (true) {
+//            try {
+//                product.setProductQuantity(product.getProductQuantity() +  1);
+//                repository.save(product);
+//                break;
+//            } catch (RuntimeException e) {
+//                System.out.println("+1 LOIIIIII");
+//                product = repository.findById(2).orElse(null) ;
 //            }
 //        }
 

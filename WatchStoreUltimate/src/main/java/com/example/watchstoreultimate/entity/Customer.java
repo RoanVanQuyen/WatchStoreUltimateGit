@@ -9,6 +9,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -28,7 +29,7 @@ public class Customer {
     String customerPhone ;
     @Builder.Default
             @Column(columnDefinition = "DATE")
-    LocalDate accountCreatDate = LocalDate.now() ;
+    Date accountCreatDate = new Date(System.currentTimeMillis()) ;
     @Builder.Default
     boolean customerAvailable =true;
 

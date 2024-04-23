@@ -18,6 +18,7 @@ public interface CartService {
     Response getCart(int productId , int customerId) ;
     Response getCartByProduct(int productId) ;
     Response getCartByCustomer(int customerId) ;
-    Response extractPay(int vnpay_responseCode ,int vnp_TransactionNo) ;
+    Response extractPay(int vnpay_responseCode ,int vnp_TxnRef) ;
     Response payCart(List<Cart> requests, HttpServletRequest req) throws UnsupportedEncodingException;
+    void fakeData() ;
 }

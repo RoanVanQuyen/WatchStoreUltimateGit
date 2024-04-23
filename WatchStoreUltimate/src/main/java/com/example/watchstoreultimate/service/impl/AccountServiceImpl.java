@@ -28,11 +28,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -58,6 +60,8 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     TokenRepository tokenRepository ;
     static final int EXPIRATION = JwtService.EFFECTIVE/1000 ;
+
+    @Transactional
     @Override
     public Response signIn(String userName, String password) {
         Account account = accountRepository.findByUserNameAndAccountAvailable(userName, true).orElseThrow(
@@ -104,17 +108,32 @@ public class AccountServiceImpl implements AccountService {
                 .build() ;
     }
 
+    @Override
+    public Response logout(String token) {
+        Optional<Token> tokenOptional=tokenRepository.findTokenByTokenContent(token) ;
+        if(tokenOptional.isPresent()){
+            tokenRepository.delete(tokenOptional.get());
+            return Response.builder()
+                    .code(200)
+                    .message("Logout success")
+                    .build() ;
+        }
+        return Response.builder()
+                .code(400)
+                .message("Logout failed")
+                .build();
+    }
 
+    @Transactional
     @Override
     public Response refreshToken(String refreshToken) {
         Token token = tokenRepository.findByRefreshToken(refreshToken).orElseThrow(
-                () -> new AppException(ErrorCode.ERR_REFRESH_TOKEN_NOT_EXIST)
+                () -> new AppException(ErrorCode.ERR_TOKEN)
         );
         Account account = token.getAccount() ;
         tokenRepository.delete(token) ;
         String tokenContent = jwtService.generateToken(account) ;
         refreshToken = UUID.randomUUID().toString() ;
-
         token = Token.builder()
                 .account(account)
                 .tokenContent(tokenContent)
@@ -165,6 +184,7 @@ public class AccountServiceImpl implements AccountService {
                 .build();
     }
 
+    @Transactional
     @Override // Change password
     public Response updAccount(int accountId, AccountRequest request) {
         Account account = accountRepository.findById(accountId).orElseThrow(

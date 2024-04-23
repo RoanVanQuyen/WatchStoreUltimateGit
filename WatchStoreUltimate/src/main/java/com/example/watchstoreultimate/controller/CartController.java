@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.stream.IntStream;
 
 @RestController
 @RequestMapping(UrlConstant.CartURL.PRE_FIX)
@@ -78,4 +79,23 @@ public class CartController {
         return ResponseEntity.status(response.getCode())
                 .body(response) ;
     }
+
+//    @RequestMapping(value = "test")
+//    public ResponseEntity<?> resultPayTest(){
+//        cartService.fakeData();
+//        Runnable runnableOne = () -> IntStream.range(0,3)
+//                .forEach( i-> {
+//                    Response response = cartService.extractPay(00 ,1) ;
+//                });
+//        Runnable runnableTwo = () -> IntStream.range(0,3)
+//                .forEach( i-> {
+//                        Response response = cartService.extractPay(00, 2);
+//                });
+//        Thread one = new Thread(runnableOne) ;
+//        Thread two = new Thread(runnableTwo) ;
+//        one.start();
+//        two.start();
+//        return ResponseEntity.ok("OK") ;
+//    }
+
 }

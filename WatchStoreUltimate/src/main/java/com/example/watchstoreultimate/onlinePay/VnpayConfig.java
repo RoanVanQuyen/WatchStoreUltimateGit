@@ -6,12 +6,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 public class VnpayConfig {
@@ -19,7 +14,7 @@ public class VnpayConfig {
     public  static String vnp_Command = "pay";
 
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-    public static String vnp_ReturnUrl = "http://localhost:8080/cart/1011/pay/online/result";
+    public static String vnp_ReturnUrl = "http://localhost:8080/watch-store/cart/1011/pay/online/result";
     public static String vnp_TmnCode = "4OJH0IKW";
     public static String secretKey = "UZVPZIWYSBLZPWNKZELQLZDAYOCBDSDU";
     public static String vnp_ApiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
@@ -123,6 +118,6 @@ public class VnpayConfig {
     }
     static int payId = getId();
     public static int getRandomNumber() {
-        return  payId++ ;
+        return payId++;
     }
 }

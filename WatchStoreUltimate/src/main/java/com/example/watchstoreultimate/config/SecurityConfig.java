@@ -85,7 +85,7 @@ public class SecurityConfig {
                             , UrlConstant.ProductURL.PRE_FIX + UrlConstant.ROLE_USER + "/**"
                             , UrlConstant.ProductDetailsURL.PRE_FIX + UrlConstant.ROLE_USER + "/**"
                             , UrlConstant.ProductImageURL.PRE_FIX + UrlConstant.ROLE_USER + "/**"
-//                            , UrlConstant.PurchaseUrl.PRE_FIX + UrlConstant.ROLE_MANAGER + "/**"
+                            , UrlConstant.PurchaseUrl.PRE_FIX + UrlConstant.ROLE_MANAGER + "/**"
                     ).hasAnyAuthority(RoleConstant.USER , RoleConstant.MANAGER, RoleConstant.ADMIN ) ;
 
 

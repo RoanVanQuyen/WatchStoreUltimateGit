@@ -7,10 +7,6 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.validation.annotation.Validated;
-
-import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -34,9 +30,12 @@ public class Product {
     @Min(value = 0 , message = "Phần trăm giảm giá của sản phẩm phải lớn hơn hoặc bằng 0")
             @Max(value = 100 , message = "Phần trăm giảm giá của sản phẩm nhỏ hơn bằng 100")
     int productPriceReduction ;
+    @Version
+    long version ;
     @Builder.Default
     boolean productAvailable = true;
-    @ManyToOne @JoinColumn(name = "brandId")
+    @ManyToOne()
+            @JoinColumn(name = "brandId")
     Brand brand ;
 
     @OneToMany(mappedBy = "product" , cascade = CascadeType.ALL)
