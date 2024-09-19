@@ -1,6 +1,7 @@
 package com.example.watchstoreultimate.constant;
 
 public class ErrorResponseMessage {
+
     public final static String ERR_ID_NOT_FOUND = "Không tìm thấy đối tượng bằng mã định danh" ;
     public final static String NAME_EXISTED = "Tên đã tồn tại" ;
 

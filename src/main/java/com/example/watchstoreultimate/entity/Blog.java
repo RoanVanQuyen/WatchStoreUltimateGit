@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @AllArgsConstructor@NoArgsConstructor
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Blog { // ROLE_MANAGER , ADMIN
+public class Blog {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     int blogId ;
     @Column(columnDefinition = "varchar(200)", nullable = false)

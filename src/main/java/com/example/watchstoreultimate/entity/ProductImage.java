@@ -7,7 +7,7 @@ import lombok.experimental.FieldDefaults;
 
 @Entity
 @Data
-@Builder@Hidden
+@Builder
 @NoArgsConstructor @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductImage {

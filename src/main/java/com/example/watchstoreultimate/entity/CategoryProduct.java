@@ -1,12 +1,13 @@
 package com.example.watchstoreultimate.entity;
 
-import io.swagger.v3.oas.annotations.Hidden;
+import com.example.watchstoreultimate.idclass.CategoryProduct_ID;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Entity @FieldDefaults(level = AccessLevel.PRIVATE)@Hidden
-@IdClass(com.example.watchstoreultimate.idclass.CategoryProduct.class)
+@Entity
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@IdClass(CategoryProduct_ID.class)
 @Builder@Data
 @AllArgsConstructor @NoArgsConstructor
 public class CategoryProduct {

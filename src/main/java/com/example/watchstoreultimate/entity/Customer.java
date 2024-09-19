@@ -13,7 +13,7 @@ import java.util.List;
 
 @Entity
 @Builder @Data
-@AllArgsConstructor @NoArgsConstructor@Hidden
+@AllArgsConstructor @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Customer {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

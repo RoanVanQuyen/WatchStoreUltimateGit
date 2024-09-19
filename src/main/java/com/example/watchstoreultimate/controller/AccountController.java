@@ -39,7 +39,6 @@ public class AccountController {
                 .body(response) ;
     }
 
-    // clean architechture
     @Operation(summary = "SIGN IN SYSTEM" , description = "Method = POST, Object = [ S.userName, S.password ] ")
     @ApiResponse(responseCode = ErrorResponseCode.Account.USERNAME_NOT_FOUND + "", description = ErrorResponseMessage.Account.USERNAME_NOT_FOUND , content = @Content)
     @RequestMapping(value = UrlConstant.AccountURL.SIGN_IN , method = RequestMethod.POST)
@@ -80,13 +79,9 @@ public class AccountController {
 
     @Operation(summary = "Refresh token")
     @RequestMapping(value = UrlConstant.AccountURL.REFRESH_TOKEN, method = RequestMethod.POST)
-    public ResponseEntity<?> refreshToken(@PathVariable String refreshToken){
-        Response response = accountService.refreshToken(refreshToken) ;
+    public ResponseEntity<?> refreshToken(@PathVariable String refreshToken) {
+        Response response = accountService.refreshToken(refreshToken);
         return ResponseEntity.status(response.getCode())
-                .body(response) ;
+                .body(response);
     }
-
-
-
-
 }

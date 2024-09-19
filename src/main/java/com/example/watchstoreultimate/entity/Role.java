@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
-@Entity@Hidden
+@Entity
 @Data @Builder
 @NoArgsConstructor @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)

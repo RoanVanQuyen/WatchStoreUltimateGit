@@ -9,6 +9,7 @@ public class ErrorResponseCode {
         public final static int USERNAME_NOT_FOUND = 1002 ;
         public final static int TOKEN_ERR = 403 ;
     }
+
     public static class Address{
         public final static int ERR_ADDRESS_EXISTED_FOR_CUSTOMER = 1003 ;
     }

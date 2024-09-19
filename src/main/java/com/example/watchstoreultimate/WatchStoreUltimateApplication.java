@@ -49,22 +49,5 @@ public class WatchStoreUltimateApplication implements CommandLineRunner {
     PurchaseHistoryRepository repository ;
     @Override
     public void run(String... args) throws Exception {
-//        List<String> string = new ArrayList<>() ;
-//        int n = 10000 ;
-//        while(n-- > 0) {
-//            string.add(UUID.randomUUID().toString());
-//        }
-//        Collections.sort(string, new Comparator<String>() {
-//            @Override
-//            public int compare(String o1, String o2) {
-//                return o1.compareTo(o2);
-//            }
-//        });
-//        for(int i = 0 ;i < string.size()-1 ; i++){
-//            if(string.get(i).equals(string.get(i+1))){
-//                System.out.println(string.get(i));
-//            }
-//        }
-
     }
 }

@@ -13,7 +13,7 @@ import java.io.Serializable;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor @NoArgsConstructor
 @Data
-public class CategoryProduct implements Serializable {
+public class CategoryProduct_ID implements Serializable {
     Category category ;
     Product product;
 }

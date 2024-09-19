@@ -11,7 +11,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
-@Entity @IdClass(CustomerProduct.class)@Hidden
+@Entity
+@IdClass(CustomerProduct.class)
 @Data @Builder
 @AllArgsConstructor @NoArgsConstructor
 public class Cart {

@@ -14,7 +14,7 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor @AllArgsConstructor
-@Builder@Hidden
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Comment {
     @Id
